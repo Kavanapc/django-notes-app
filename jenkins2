@@ -24,7 +24,7 @@ pipeline {
         }
         stage("deploy"){
             steps{
-                sh "docker run -d -p8000:8000 kavanapc/django-notes-app:latest"
+                sh "docker-compose down && docker-compose up"
             }
     }
     
