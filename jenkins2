@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('code') {
+            steps {
+                git url:"https://github.com/Kavanapc/django-notes-app.git", branch:"main"
+            }
+        }
+        
+        stage('build'){
+            steps{
+                sh "docker build -t kavanapc/django-notes-app ."
+            }
+        }
+    
+        stage("push"){
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'passwd', usernameVariable: 'docker_hub')]) {
+                sh "docker login -u ${env.docker_hub} -p ${env.passwd}"
+                sh "docker push kavanapc/django-notes-app:latest"
+}
+            }
+        }
+        stage("deploy"){
+            steps{
+                sh "docker run -d -p8000:8000 kavanapc/django-notes-app:latest"
+            }
+    }
+    
+}
+}
